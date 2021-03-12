@@ -1,7 +1,7 @@
 import 'leaflet/dist/leaflet.css';
 
 import React, {
-  useCallback, useEffect, useMemo, useState,
+  useCallback, useEffect, useState,
 } from 'react';
 import { MdPinDrop, MdSearch } from 'react-icons/md';
 import InputMask from 'react-input-mask';
@@ -57,6 +57,7 @@ const Main: React.FC = () => {
           setError(true);
         }
         setLoading(true);
+
         const response = await api.get<CepInterface>(`/cep/${cep}`);
         setLoading(false);
         setData(response.data);
