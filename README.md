@@ -44,6 +44,10 @@
 
 <br>
 
+<div style="border: 1px solid #a3a3a3; border-radius: 20px;" >
+  <img src="./src/assets/gif_to_app.gif">
+</div>
+
 ## 👨🏻‍💻 sobre o projeto
 
 - <p style="color: gray;">Elaboração de uma API que ajude o usuário a fazer uma consulta de um determinado CEP. ao informar um determinado CEP a aplicação o armazena em um base de dados como cache para futuras consultas.</p>
@@ -54,13 +58,13 @@ Para acessar o **Cliente Web**, click aqui: [EurekaLabs Cep Web](https://github/
 
 Tecnologias que foram utilizadas para desenvolver essa api.
 
-- [Node.js](https://nodejs.org/en/)
 - [TypeScript](https://www.typescriptlang.org/)
-- [Express](https://expressjs.com/pt-br/)
-- [MongoDB](https://www.mongodb.com/cloud/atlas)
-- [Jest](https://jestjs.io/)
+- [Styled Components](https://styled-components.com/docs/api)
+- [Polished](https://polished.js.org/docs/)
+- [React Icons](https://react-icons.github.io/react-icons)
+- [React Input Mask](https://github.com/sanniassin/react-input-mask)
 - [Axios](https://github.com/axios/axios)
-- [mongoose](https://mongoosejs.com/)
+- [Leaflet](https://react-leaflet.js.org/)
 - [Eslint](https://eslint.org/)
 - [Prettier](https://prettier.io/)
 - [EditorConfig](https://editorconfig.org/)
@@ -91,11 +95,11 @@ $ cd EurekaLabs-frontend
 $ yarn ou npm install
 
 # rodando na sua maquina o projeto
-$ yarn run:server
+$ yarn start ou npm start
 
 # sendo um projeto local iniciará no endereço
 
-# http://localhost:3333/ceps/numero_do_cep_a_ser_buscado
+# http://localhost:3000
 ```
 
 
