@@ -1,11 +1,13 @@
 import React from 'react';
 
-function App() {
-  return (
-    <div className="App">
-      <h1>Opa</h1>
-    </div>
-  );
-}
+import Main from './pages/Main';
+import Style from './styles/styles';
+
+const App: React.FC = () => (
+  <>
+    <Main />
+    <Style />
+  </>
+);
 
 export default App;
