@@ -41,11 +41,12 @@ const Main: React.FC = () => {
   const [data, setData] = useState<CepInterface>({} as CepInterface);
 
   const [mapBox, setMapBox] = useState<LatLngExpression>([-18.4554376, -48.5267386]);
+
   const mapPinIcon = Leaflet.icon({
     iconUrl: pinSvg,
     iconSize: [58, 68],
     iconAnchor: [29, 68],
-    popupAnchor: [170, 2],
+    popupAnchor: [150, 2],
   });
 
   const handleSubmit = useCallback(() => {
@@ -73,8 +74,11 @@ const Main: React.FC = () => {
   useEffect(() => {
     async function loadMap() {
       const { data: local } = await mapbox.get(`${data.localidade}.json?access_token=${process.env.REACT_APP_ACCESS_TOKEN_MAP_BOX}`);
-      const pos: LatLngExpression = [local.features[0].center[1], local.features[0].center[0]];
-      setMapBox(pos);
+      const positions = local.features[0].bbox;
+      if (positions) {
+        const pos: LatLngExpression = [positions[1], positions[0]];
+        setMapBox(pos);
+      }
     }
     loadMap();
   },
@@ -138,8 +142,11 @@ const Main: React.FC = () => {
           <Map>
             <MapContainer
               center={mapBox}
-              zoom={4.45}
+              zoom={4}
               scrollWheelZoom
+              zoomAnimation
+              maxZoom={7}
+              minZoom={4}
               style={{
 
                 width: '100vw',
