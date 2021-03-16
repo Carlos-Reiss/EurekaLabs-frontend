@@ -146,7 +146,7 @@ const Main: React.FC = () => {
               zoom={4}
               scrollWheelZoom
               zoomAnimation
-              // maxZoom={7}
+              maxZoom={7}
               minZoom={4}
               style={{
 
