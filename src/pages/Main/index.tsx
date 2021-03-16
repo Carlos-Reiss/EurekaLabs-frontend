@@ -73,11 +73,12 @@ const Main: React.FC = () => {
 
   useEffect(() => {
     async function loadMap() {
-      const { data: local } = await mapbox.get(`${data.localidade}.json?access_token=${process.env.REACT_APP_ACCESS_TOKEN_MAP_BOX}`);
-      const positions = local.features[0].bbox;
+      const { data: local } = await mapbox.get(`${data.bairro} ${data.logradouro} ${data.cep}.json?access_token=${process.env.REACT_APP_ACCESS_TOKEN_MAP_BOX}`);
+      const positions = local.features[0].center;
       if (positions) {
         const pos: LatLngExpression = [positions[1], positions[0]];
         setMapBox(pos);
+        console.log(pos);
       }
     }
     loadMap();
@@ -145,7 +146,7 @@ const Main: React.FC = () => {
               zoom={4}
               scrollWheelZoom
               zoomAnimation
-              maxZoom={7}
+              // maxZoom={7}
               minZoom={4}
               style={{
 
