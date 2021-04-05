@@ -1,11 +1,13 @@
 import 'leaflet/dist/leaflet.css';
 
 import React, {
-  useCallback, useEffect, useState,
+  useEffect, useState,
 } from 'react';
+
 import { MdPinDrop, MdSearch } from 'react-icons/md';
 import InputMask from 'react-input-mask';
 import dotenv from 'dotenv';
+import { useQuery } from 'react-query';
 
 import {
   MapContainer, TileLayer, Marker,
@@ -21,6 +23,7 @@ import {
   Container, Content, Details, Data,
   CEP, Map,
 } from './styles';
+
 import api from '../../services/api';
 
 interface CepInterface {
@@ -36,10 +39,8 @@ const Main: React.FC = () => {
   dotenv.config();
 
   const [cep, setCep] = useState('');
-  const [error, setError] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<CepInterface>({} as CepInterface);
-
+  const [termoPesquisa, setTermoPesquisa] = useState('73015-132');
+  const [dataCep, setDataCep] = useState<CepInterface>({} as CepInterface);
   const [mapBox, setMapBox] = useState<LatLngExpression>([-18.4554376, -48.5267386]);
 
   const mapPinIcon = Leaflet.icon({
@@ -49,44 +50,30 @@ const Main: React.FC = () => {
     popupAnchor: [150, 2],
   });
 
-  const handleSubmit = useCallback(() => {
-    async function buscarCep() {
-      try {
-        setError(false);
-        setLoading(false);
-        if (cep === '' || cep.length !== 9) {
-          setError(true);
-        }
-        setLoading(true);
+  const fetchCep = async () => {
+    const { data: responseData } = await api.get<CepInterface>(`/cep/${termoPesquisa}`);
+    setDataCep(responseData);
+    return responseData;
+  };
 
-        const response = await api.get<CepInterface>(`/cep/${cep}`);
-        setLoading(false);
-        setData(response.data);
-      } catch (e) {
-        setError(true);
-        setLoading(false);
-        alert('CEP inválido, por favor tente novamente... \n O CEP informado precisa conter um conteúdo válido');
-      }
-    }
-    buscarCep();
-  }, [cep]);
+  const {
+    status, isLoading, isError, error,
+  } = useQuery(termoPesquisa, fetchCep, { retry: false });
 
   useEffect(() => {
     async function loadMap() {
-      const { data: local } = await mapbox.get(`${data.bairro} ${data.logradouro} ${data.cep}.json?access_token=${process.env.REACT_APP_ACCESS_TOKEN_MAP_BOX}`);
+      const { data: local } = await mapbox.get(`${dataCep.bairro} ${dataCep.logradouro} ${dataCep.cep}.json?access_token=${process.env.REACT_APP_ACCESS_TOKEN_MAP_BOX}`);
       const positions = local.features[0].center;
       if (positions) {
         const pos: LatLngExpression = [positions[1], positions[0]];
         setMapBox(pos);
-        console.log(pos);
       }
     }
     loadMap();
   },
-  [data]);
+  [dataCep, termoPesquisa]);
 
   const formatCEP = (cepLimpo: string):string => `${cepLimpo.substring(0, 5)}-${cepLimpo.substring(5, 8)}`;
-
   return (
     <>
       <Header />
@@ -98,44 +85,47 @@ const Main: React.FC = () => {
               <MdPinDrop size={42} color="#333" />
               Buscar seu Cep
             </h2>
-            <Data isError={error} isLoading={loading}>
+            <Data isError={isError} isLoading={isLoading}>
 
               <InputMask mask="99999-999" type="text" onChange={(e) => setCep(e.target.value)} value={cep} placeholder="Digite seu CEP" />
-              <button type="button" onClick={() => handleSubmit()}>
+              <button type="button" onClick={() => setTermoPesquisa(cep)}>
                 <MdSearch size={24} color="#ededed" />
-                {loading ? 'Carregando...' : 'Pesquisar'}
+                { status === 'loading' ? 'Carregando...' : 'Pesquisar'}
               </button>
             </Data>
           </form>
+          {isError && (
+            <p>Por favor informe um CEP Valido, tente novamente!</p>
+          )}
         </Content>
 
         <Details>
-          {data && data.cep && (
+          {dataCep && dataCep.cep && (
           <CEP>
             <h2>Endereço Encontrado.</h2>
             <p>
               <strong>CEP: </strong>
-              {formatCEP(data.cep)}
+              {formatCEP(dataCep.cep)}
             </p>
             <div>
               <p>
                 <strong>Bairro: </strong>
-                {data.bairro}
+                {dataCep.bairro}
               </p>
               <p>
                 <strong>Logradouro: </strong>
-                {data.logradouro}
+                {dataCep.logradouro}
               </p>
             </div>
 
             <div>
               <p>
                 <strong>Localidade: </strong>
-                {data.localidade}
+                {dataCep.localidade}
               </p>
               <p>
                 <strong>UF: </strong>
-                {data.uf}
+                {dataCep.uf}
               </p>
             </div>
           </CEP>
